@@ -379,4 +379,16 @@ button{
     font-size: 20px;
     font-weight: bold;
     margin-right: 20px;
+    margin-bottom: 10px;
+}
+.fa-circle
+{
+    color: limegreen
+}
+#test
+{
+    height: 450px;
+    overflow-y: scroll;
+    background-color: #080710;
+    padding: 17px;
 }
