@@ -10,6 +10,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.socketchatapp.model.ChatMessage;
 import com.example.socketchatapp.model.ChatType;
+import com.example.socketchatapp.model.Storage;
 
 @Component
 public class SocketAction {
@@ -31,6 +32,7 @@ public class SocketAction {
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setChatType(ChatType.LEAVE);
             chatMessage.setSender(userName);
+            Storage.removeBySession(headerAccessor.getSessionId());
             messagingTemplate.convertAndSend("/topic/all",chatMessage);
         }
     }

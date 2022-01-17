@@ -6,7 +6,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+import com.example.socketchatapp.model.ActiveUser;
 import com.example.socketchatapp.model.ChatMessage;
+import com.example.socketchatapp.model.Storage;
 
 @Controller
 public class ChatController {
@@ -15,6 +17,7 @@ public class ChatController {
     @SendTo("/topic/all")
     public ChatMessage logIn(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
         headerAccessor.getSessionAttributes().put("username",chatMessage.getSender());
+        Storage.activeUserList.add(new ActiveUser(chatMessage.getSender(),headerAccessor.getSessionId()));
         return chatMessage;
     }
 
