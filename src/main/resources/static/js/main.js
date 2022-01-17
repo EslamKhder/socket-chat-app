@@ -5,6 +5,7 @@ var userForm = document.querySelector('#userForm');
 var connect = document.querySelector('#connect');
 var mainChat = document.querySelector('#main-chat');
 var sendDiv = document.querySelector('#sendDiv');
+var userOnline = document.querySelector('#online');
 var userName = null;
 var stomp = null;
 var URL = "http://localhost:8080"
@@ -13,6 +14,7 @@ function connectSocket(event){
     if(userName){
         logInElement.classList.add("dis");
         chatElement.classList.remove("dis");
+        userOnline.classList.remove("dis");
         var socket = new SockJS(URL + '/connect');
         stomp = Stomp.over(socket);
         stomp.connect({},connectedDone)
@@ -24,15 +26,16 @@ function connectedDone(){
     stomp.send("/app/chat.logIn",{},
             JSON.stringify({sender: userName,chatType: 'JOIN'})
         )
-
     connect.classList.add('dis')
 }
 function sendMessage(payload){
     var message = JSON.parse(payload.body)
     if(message.chatType == 'JOIN'){
         joinUser(message,"join")
+        listActiveUsers()
     } else if (message.chatType == 'LEAVE'){
         joinUser(message,"leave")
+        listActiveUsers()
     } else {
         var li = document.createElement('li');
         li.classList.add('sms');
@@ -53,7 +56,6 @@ function sendMessage(payload){
         li.appendChild(image);
         li.appendChild(span1);
         mainChat.appendChild(li);
-
     }
 }
 function joinUser(message,state){
@@ -80,6 +82,18 @@ function send(){
         stomp.send("/app/chat.send",{},JSON.stringify(userMessage))
         document.querySelector('#sms').value = '';
     }
+}
+function listActiveUsers(){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", URL + "/active");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+            console.log(json);
+        }
+    };
+    xhr.send();
 }
 userForm.addEventListener('submit',connectSocket)
 sendDiv.addEventListener('click',send)
